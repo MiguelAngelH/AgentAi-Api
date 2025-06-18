@@ -1,16 +1,15 @@
-# --- Asegúrate de tener un Api de openAI configurada en api.py ---
+# --- Asegúrate de tener una API de Gemini configurada en api.py ---
 import subprocess
 from tools import tool_horario, tool_reiniciar_router, tool_direccion, tool_empleados # Importa las herramientas definidas en tools.py
 from api import consultar_ia
 
-# --- Llama a la API de OpenAI (reemplaza la version anterior con ollama)---
-def consultar_ollama(prompt, modelo="gpt-4o-mini"):
+# --- Llama a la API de Gemini (reemplaza la versión anterior)---
+def consultar_ollama(prompt):
     """
-    Esta función consulta la API de OpenAI.
-    Cambia el modelo si lo deseas (por ejemplo: "gpt-4").
-    Requiere tener configurado el archivo api.py con tu API key.
+    Esta función consulta la API de Gemini.
+    Requiere tener configurado el archivo api.py con tu API key de Gemini.
     """
-    return consultar_ia(prompt, modelo)
+    return consultar_ia(prompt)
 
 # --- Ejecutar tool según respuesta del modelo ---
 def ejecutar_tools(tools_list):
@@ -40,6 +39,9 @@ Eres un técnico de computadoras de un local de reparación. Solo respondes preg
 Antes de responder, si necesitas información de tools, indícalo con [USAR TOOL:tool1, tool2, ...] según corresponda. Luego, cuando recibas los datos, genera la respuesta usando solo esa información.
 Las tools solo contienen los datos, tú debes crear la respuesta usando esos datos.
 Las tools disponibles son: tool_horario, tool_reiniciar_router, tool_direccion, tool_empleados.
+En caso que el problema sea complejo o requiera abrir el computador, indica que el usuario debe llevar el equipo al local para una revisión más detallada indicando el nombre del tecnico que se encuentra en tool_empleados.
+Si indicas a un usuario que lleve el equipo al local, asegúrate de incluir el horario de atención del local y la dirección del local.
+Si el usuario con un problema complejo indica que no puede ir al local, da las indicaciones necesarias para que pueda solucionar el problema desde su casa.
 """
 
 # --- Conversación ---

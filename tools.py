@@ -16,4 +16,4 @@ def tool_reiniciar_router():
     return "Para los problemas de conexión a Internet, se debe indicar que intente reiniciar el router."
 #tool de dirección del local, almacena la dirección del local y horario de atención.
 def tool_direccion():
-    return "La dirección del local es en Palacio La Moneda 717, abierto de 13:00 a 15:00."
+    return "La dirección del local es en Palacio La Moneda 717, abierto de Lunes a Sabado."

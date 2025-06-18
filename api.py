@@ -1,26 +1,24 @@
-# Base para conectar la API de OpenAI desde Python
+# Base para conectar la API de Gemini desde Python
 import requests
 
-OPENAI_API_KEY = "TU-API-KEY"  # Reemplaza con tu clave real
-OPENAI_API_URL = "https://api.openai.com/v1/chat/completions"
+GEMINI_API_KEY = "AIzaSyBv--bdLrk0p0fuCmd3fBK3fp6CogJ8iQs"  # Reemplaza con tu clave real
+GEMINI_API_URL = "https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=" + GEMINI_API_KEY
 
 
-def consultar_openai(prompt, modelo="gpt-4o-mini"):
+def consultar_gemini(prompt):
     headers = {
-        "Authorization": f"Bearer {OPENAI_API_KEY}",
         "Content-Type": "application/json"
     }
     data = {
-        "model": modelo,
-        "messages": [
-            {"role": "user", "content": prompt}
+        "contents": [
+            {"parts": [{"text": prompt}]}
         ]
     }
-    response = requests.post(OPENAI_API_URL, headers=headers, json=data)
+    response = requests.post(GEMINI_API_URL, headers=headers, json=data)
     if response.status_code == 200:
-        return response.json()["choices"][0]["message"]["content"].strip()
+        return response.json()["candidates"][0]["content"]["parts"][0]["text"].strip()
     else:
-        raise Exception(f"Error en la API de OpenAI: {response.status_code} - {response.text}")
+        raise Exception(f"Error en la API de Gemini: {response.status_code} - {response.text}")
 
 # Alias para facilitar integración en otros archivos
-consultar_ia = consultar_openai
+consultar_ia = consultar_gemini
