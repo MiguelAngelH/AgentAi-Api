@@ -34,7 +34,7 @@ def extraer_tools(respuesta):
 
 # --- Prompt base del agente ---
 rol = """
-Eres un técnico de computadoras de un local de reparación. Solo respondes preguntas técnicas relacionadas con computadoras, redes, hardware, software, impresoras, problemas de conexión, etc. Si el usuario pregunta algo fuera de ese ámbito, responde: 'Solo puedo responder consultas técnicas de computadoras.'
+Eres un técnico de computadoras de un local de reparación y venta de computadoras. Solo respondes preguntas relacionadas al local y preguntas técnicas relacionadas con computadoras, redes, hardware, software, impresoras, problemas de conexión, etc. Si el usuario pregunta algo fuera de ese ámbito, responde: 'Solo puedo responder consultas técnicas de computadoras.'
 
 Antes de responder, si necesitas información de tools, indícalo con [USAR TOOL:tool1, tool2, ...] según corresponda. Luego, cuando recibas los datos, genera la respuesta usando solo esa información.
 Las tools solo contienen los datos, tú debes crear la respuesta usando esos datos.
@@ -44,27 +44,39 @@ Si indicas a un usuario que lleve el equipo al local, asegúrate de incluir el h
 Si el usuario con un problema complejo indica que no puede ir al local, da las indicaciones necesarias para que pueda solucionar el problema desde su casa.
 """
 
-# --- Conversación ---
-pregunta_usuario = input("Usuario: ")
+# --- Conversación continua ---
+historial = []
 
-prompt = f"{rol}\n\nUsuario: {pregunta_usuario}\nAsistente:"
-respuesta = consultar_ollama(prompt)
-tools_needed = extraer_tools(respuesta)
-
-# Si el modelo no indica tools, forzamos a que lo haga
-if not tools_needed:
-    prompt_tools = f"{rol}\n\nUsuario: {pregunta_usuario}\nAntes de responder, indica explícitamente qué tools necesitas usando el formato [USAR TOOL:tool1, tool2, ...].\nAsistente:"
-    respuesta_tools = consultar_ollama(prompt_tools)
-    tools_needed = extraer_tools(respuesta_tools)
-
-if tools_needed:
-    datos_tools = ejecutar_tools(tools_needed)
-    print("Datos obtenidos de las tools:")
-    print(datos_tools)
-    print("Respuesta generada por el modelo:")
-    prompt_final = f"{rol}\n\nUsuario: {pregunta_usuario}\nDatos: {datos_tools}\nAsistente:"
-    respuesta_final = consultar_ollama(prompt_final)
-    print(respuesta_final)
-else:
-    print("Respuesta:")
-    print(respuesta)
+while True:
+    pregunta_usuario = input("Usuario: ")
+    if pregunta_usuario.lower() in ["salir", "exit", "quit","stop"]:
+        print("Chat finalizado.")
+        break
+    historial.append({"role": "user", "content": pregunta_usuario})
+    # Construir el prompt con historial
+    prompt = rol + "\n\n"
+    for mensaje in historial:
+        if mensaje["role"] == "user":
+            prompt += f"Usuario: {mensaje['content']}\n"
+        else:
+            prompt += f"Asistente: {mensaje['content']}\n"
+    prompt += "Asistente:"
+    respuesta = consultar_ollama(prompt)
+    tools_needed = extraer_tools(respuesta)
+    if not tools_needed:
+        prompt_tools = prompt + "\nAntes de responder, indica explícitamente qué tools necesitas usando el formato [USAR TOOL:tool1, tool2, ...].\nAsistente:"
+        respuesta_tools = consultar_ollama(prompt_tools)
+        tools_needed = extraer_tools(respuesta_tools)
+    if tools_needed:
+        datos_tools = ejecutar_tools(tools_needed)
+        print("Datos obtenidos de las tools:")
+        print(datos_tools)
+        print("Respuesta generada por el modelo:")
+        prompt_final = prompt + f"\nDatos: {datos_tools}\nAsistente:"
+        respuesta_final = consultar_ollama(prompt_final)
+        print(respuesta_final)
+        historial.append({"role": "assistant", "content": respuesta_final})
+    else:
+        print("Respuesta:")
+        print(respuesta)
+        historial.append({"role": "assistant", "content": respuesta})

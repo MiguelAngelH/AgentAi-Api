@@ -1,7 +1,7 @@
 # ------ Base para conectar la API de Gemini desde Python----
 import requests
 
-GEMINI_API_KEY = "TU-API"  # Reemplaza con tu clave real
+GEMINI_API_KEY = "AIzaSyCMdmhYnLHSej7yUSq81XJ5cdhByWD9HiI"  # Reemplaza con tu clave real
 GEMINI_API_URL = "https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=" + GEMINI_API_KEY
 
 
