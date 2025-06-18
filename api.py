@@ -1,4 +1,4 @@
-# Base para conectar la API de Gemini desde Python
+# ------ Base para conectar la API de Gemini desde Python----
 import requests
 
 GEMINI_API_KEY = "TU-API"  # Reemplaza con tu clave real
